@@ -13,9 +13,9 @@ void UMonsterSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UMonsterSubsystem::Deinitialize()
 {
-    for (auto& M : Pool)
+    for (auto& Monster : Pool)
     {
-        if (M) M->Destroy();
+        if (Monster) Monster->Destroy();
     }
 
     Pool.Empty();

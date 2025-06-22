@@ -35,6 +35,10 @@ void UCharacterStatsComponent::Heal(float Amount)
 void UCharacterStatsComponent::UseMP(float Amount)
 {
 	CurrentMP = FMath::Clamp(CurrentMP - Amount, 0.f, MaxMP);
+	if (CurrentMP < MaxMP)
+	{
+		StartMPRegen();
+	}
 	OnMPChanged.Broadcast();
 }
 
@@ -75,4 +79,39 @@ void UCharacterStatsComponent::InitializeStats()
 {
 	CurrentHP = MaxHP;
 	CurrentMP = MaxMP;
+}
+
+void UCharacterStatsComponent::StartMPRegen()
+{
+	if (!GetWorld()) return;
+
+	if (!GetWorld()->GetTimerManager().IsTimerActive(MPRegenTimer))
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			MPRegenTimer,
+			this,
+			&UCharacterStatsComponent::RegenMPTick,
+			MPRegenInterval,
+			true
+		);
+	}
+}
+
+void UCharacterStatsComponent::StopMPRegen()
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(MPRegenTimer);
+	}
+}
+
+void UCharacterStatsComponent::RegenMPTick()
+{
+	if (CurrentMP >= MaxMP)
+	{
+		StopMPRegen();
+		return;
+	}
+
+	RestoreMP(MPRegenRate);
 }

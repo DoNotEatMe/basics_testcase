@@ -61,6 +61,30 @@ void APawnCharacterBase::BeginPlay()
 	}
 }
 
+float APawnCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+
+	const float ActualDamage = FMath::Max(0.f, DamageAmount);
+
+	if (ActualDamage <= 0.f)
+	{
+		return 0.f;
+	}
+
+	StatsComponent->TakeDamage(ActualDamage);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Character took %.2f damage from %s"), DamageAmount,
+		   *DamageCauser->GetName());
+	
+	if (StatsComponent->CurrentHP <= 0.f)
+	{
+		this->Destroy();
+	}
+
+	return ActualDamage;
+}
+
 // Called every frame
 void APawnCharacterBase::Tick(float DeltaTime)
 {
@@ -132,6 +156,7 @@ void APawnCharacterBase::HandleFire(const FInputActionValue& Value)
 inline void APawnCharacterBase::HandleHeal(const FInputActionValue& Value)
 {
 	StatsComponent->Heal(10.f);
+	StatsComponent->UseMP(3.f);
 }
 
 
@@ -139,3 +164,4 @@ void APawnCharacterBase::HandleAddMP(const FInputActionValue& Value)
 {
 	StatsComponent->RestoreMP(100.f);
 }
+

@@ -4,6 +4,7 @@
 #include "Enemy/BasicEnemy.h"
 
 #include "Character/CharacterStatsComponent.h"
+#include "Enemy/BasicAIController.h"
 #include "Enemy/SpawnSystem/SpawnPoint.h"
 #include "GameFramework/FloatingPawnMovement.h"
 
@@ -15,6 +16,8 @@ ABasicEnemy::ABasicEnemy()
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 
 	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+	
+	AIControllerClass = ABasicAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
 	Revive();

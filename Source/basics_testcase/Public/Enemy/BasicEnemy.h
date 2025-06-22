@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "BasicEnemy.generated.h"
 
+class AEnemyProjectile;
 class UBehaviorTree;
 class UFloatingPawnMovement;
 class ASpawnPoint;
@@ -36,6 +37,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UBehaviorTree* BehaviorTree;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<AEnemyProjectile> ProjectileClass;
 
 protected:
 	// Called when the game starts or when spawned
@@ -54,10 +58,15 @@ protected:
 		AActor* DamageCauser
 	) override;
 
+	
+
 	void Die(AController* EventInstigator);
 
 	UPROPERTY()
 	TWeakObjectPtr<ASpawnPoint> Spawner;
+
+
+
 
 
 	

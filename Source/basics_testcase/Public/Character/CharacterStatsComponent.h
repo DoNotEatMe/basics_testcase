@@ -52,9 +52,22 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Stats")
 	FOnStatChanged OnLVLChanged;
 
+	
+	
+	FTimerHandle MPRegenTimer;
+	
+	UPROPERTY(EditAnywhere, Category="Stats|MP")
+	float MPRegenRate = 2.0f; 
+
+	UPROPERTY(EditAnywhere, Category="Stats|MP")
+	float MPRegenInterval = 1.0f;
+
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	
+	void CheckLevelUp();
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -75,8 +88,13 @@ public:
 	UFUNCTION()
 	void InitializeStats();
 
-private:
-	void CheckLevelUp();
+	UFUNCTION()
+	void RegenMPTick();
+
+	void StartMPRegen();
+	void StopMPRegen();
+
+	
 		
 };
 
