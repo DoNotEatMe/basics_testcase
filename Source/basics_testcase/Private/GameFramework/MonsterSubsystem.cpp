@@ -76,7 +76,7 @@ ABasicEnemy* UMonsterSubsystem::CreateMonster(TSubclassOf<ABasicEnemy> MonsterCl
     if (!ensure(World)) return nullptr;
 
     FActorSpawnParameters Params;
-    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
     return World->SpawnActor<ABasicEnemy>(MonsterClass, FVector::ZeroVector, FRotator::ZeroRotator, Params);
 }

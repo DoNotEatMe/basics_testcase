@@ -14,8 +14,14 @@ ABasicEnemy::ABasicEnemy()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	SetRootComponent(StaticMeshComponent);
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	StaticMeshComponent->SetCollisionObjectType(ECC_Pawn);
+	StaticMeshComponent->SetCollisionResponseToAllChannels(ECR_Block);
+
 
 	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+	MovementComponent->SetUpdatedComponent(StaticMeshComponent);
 	
 	AIControllerClass = ABasicAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
