@@ -6,6 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "BasicEnemy.generated.h"
 
+class UBehaviorTree;
+class UFloatingPawnMovement;
+class ASpawnPoint;
+
 UCLASS()
 class BASICS_TESTCASE_API ABasicEnemy : public APawn
 {
@@ -15,35 +19,51 @@ public:
 	// Sets default values for this pawn's properties
 	ABasicEnemy();
 
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* StaticMeshComponent;
-
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "Stats")
 	float CurrentHP = 0;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "Stats")
 	float MaxHP = 100;
 
-	UPROPERTY()
-	bool bIsDead = false;
+	UPROPERTY(EditAnywhere, Category = "Stats")
+	float EXPOnDeath = 40;
+
+	void SetSpawner(ASpawnPoint* SpawnActor);
+
+	void Revive();
+
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UBehaviorTree* BehaviorTree;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* StaticMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UFloatingPawnMovement* MovementComponent;
+
 	virtual float TakeDamage(
 		float DamageAmount,
-		struct FDamageEvent const& DamageEvent,
+		FDamageEvent const& DamageEvent,
 		AController* EventInstigator,
 		AActor* DamageCauser
 	) override;
 
-	void Die();
+	void Die(AController* EventInstigator);
+
+	UPROPERTY()
+	TWeakObjectPtr<ASpawnPoint> Spawner;
+
+
+	
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

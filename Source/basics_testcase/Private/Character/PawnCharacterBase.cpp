@@ -95,7 +95,7 @@ void APawnCharacterBase::HandleFire(const FInputActionValue& Value)
 {
 	if (!Camera) return;
 
-	if (StatsComponent->CurrentMP < 10.f) return;
+	if (StatsComponent->CurrentMP < 3.f) return;
 
 	FHitResult Hit;
 	FVector CameraLocation = Camera->GetComponentLocation();
@@ -107,7 +107,7 @@ void APawnCharacterBase::HandleFire(const FInputActionValue& Value)
 	UWorld* World = GetWorld();
 	if (!ensure(World)) return;
 
-	StatsComponent->UseMP(10.f);
+	StatsComponent->UseMP(3.f);
 
 	bool bHit = World->LineTraceSingleByChannel(Hit, CameraLocation, EndTrace, ECC_Visibility, Params);
 	if (bHit)
@@ -118,16 +118,14 @@ void APawnCharacterBase::HandleFire(const FInputActionValue& Value)
 		{
 			UGameplayStatics::ApplyDamage(
 				Target,
-				10.f,
+				100.f,
 				Controller,
 				this,
 				UDamageType::StaticClass()
 			);
-
-			UE_LOG(LogTemp, Warning, TEXT("%s damagerd for 10.f"), *Target->GetName());
 		}
-		DrawDebugLine(World, CameraLocation, EndTrace, FColor::Green, false, 5.f);
-		DrawDebugSphere(World, Hit.Location, 50.f, 20, FColor::Red, true, 5.f);
+		// DrawDebugLine(World, CameraLocation, EndTrace, FColor::Green, false, 5.f);
+		// DrawDebugSphere(World, Hit.Location, 50.f, 20, FColor::Red, true, 5.f);
 	}
 }
 

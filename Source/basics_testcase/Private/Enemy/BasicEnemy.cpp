@@ -3,6 +3,10 @@
 
 #include "Enemy/BasicEnemy.h"
 
+#include "Character/CharacterStatsComponent.h"
+#include "Enemy/SpawnSystem/SpawnPoint.h"
+#include "GameFramework/FloatingPawnMovement.h"
+
 // Sets default values
 ABasicEnemy::ABasicEnemy()
 {
@@ -10,7 +14,11 @@ ABasicEnemy::ABasicEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 
-	CurrentHP = MaxHP;
+	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	
+	Revive();
+
 }
 
 // Called when the game starts or when spawned
@@ -28,7 +36,7 @@ float ABasicEnemy::TakeDamage(
 {
 	const float ActualDamage = FMath::Max(0.f, DamageAmount);
 
-	if (ActualDamage <= 0.f || bIsDead)
+	if (ActualDamage <= 0.f)
 	{
 		return 0.f;
 	}
@@ -40,16 +48,35 @@ float ABasicEnemy::TakeDamage(
 
 	if (CurrentHP <= 0.f)
 	{
-		Die();
+		Die(EventInstigator);
 	}
 
 	return ActualDamage;
 }
 
-void ABasicEnemy::Die()
+void ABasicEnemy::Die(AController* EventInstigator)
 {
-	bIsDead = true;
-	this->Destroy();
+	APawn* PlayerPawn = EventInstigator->GetPawn();
+	if (UCharacterStatsComponent* Stats = PlayerPawn->FindComponentByClass<UCharacterStatsComponent>(); PlayerPawn && Stats)
+	{
+		Stats->GainEXP(EXPOnDeath);
+	}
+	if (Spawner.IsValid())
+	{
+		Spawner->NotifyMonsterDied(this);
+	}
+}
+
+void ABasicEnemy::SetSpawner(ASpawnPoint* SpawnActor)
+{
+	if (SpawnActor){
+		Spawner = SpawnActor;
+	}
+}
+
+void ABasicEnemy::Revive()
+{
+	CurrentHP = MaxHP;
 }
 
 
@@ -59,8 +86,7 @@ void ABasicEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
-void ABasicEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+UPawnMovementComponent* ABasicEnemy::GetMovementComponent() const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	return MovementComponent;
 }
